@@ -1,0 +1,12 @@
+<div class="flex min-h-screen">
+  <!-- Левый сайдбар -->
+  <app-left-sidebar class="w-64 border-r border-gray-200"></app-left-sidebar>
+
+  <!-- Основной контент -->
+  <div class="flex-1 overflow-auto p-6">
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- Правый сайдбар -->
+  <app-right-sidebar class="w-80 border-l border-gray-200"></app-right-sidebar>
+</div>

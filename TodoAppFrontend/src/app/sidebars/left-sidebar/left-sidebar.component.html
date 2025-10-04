@@ -1,0 +1,8 @@
+<div class="h-full flex flex-col bg-white p-4 space-y-2">
+  <ng-container *ngFor="let item of menuItems">
+    <app-left-sidebar-button
+      [label]="item.label"
+      (clicked)="item.route ? router.navigate([item.route]) : item.action?.()">
+    </app-left-sidebar-button>
+  </ng-container>
+</div>

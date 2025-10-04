@@ -1,0 +1,25 @@
+<div class="flex flex-col justify-center items-center min-h-screen">
+  <h1 class="text-5xl font-bold p-5">Login</h1>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-80">
+
+    <p *ngIf="submitted && form.invalid"
+       class="font-bold text-red-900 bg-red-500 p-2 rounded">
+      Wrong formatting.
+    </p>
+
+    <label for="email">Enter your email.</label>
+    <input formControlName="email" type="email" placeholder="Email" required
+           class="border rounded p-2">
+
+    <label for="password">Enter your password.</label>
+    <input formControlName="password" type="password" placeholder="Password" required
+           class="border rounded p-2">
+
+    <input type="submit" value="Login"
+           class="bg-blue-600 text-white p-2 rounded cursor-pointer"
+            (click)="onSubmit()">
+  </form>
+  <p class="p-3">Don't have an account?
+    <a class="text-blue-600 hover:underline cursor-pointer" routerLink="/register">Register</a>
+  </p>
+</div>
