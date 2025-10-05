@@ -3,9 +3,7 @@ import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-left-sidebar-button',
-  imports: [
-    NgIf
-  ],
+  imports: [],
   templateUrl: './left-sidebar-button.component.html',
   styleUrl: './left-sidebar-button.component.css'
 })
