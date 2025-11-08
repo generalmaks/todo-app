@@ -2,19 +2,19 @@
 
 namespace TodoAppBackend.Domain.Interfaces.Repositories;
 
-public interface ITaskService
+public interface ITaskRepository
 {
-    Task<TaskItem> GetByIdAsync(int id, int userId);
+    Task<TaskItem?> GetByIdAsync(int id);
 
     Task<IEnumerable<TaskItem>> GetTasksAsync(
-        int userId,
+        string userEmail,
         int pageNumber,
         int pageSize,
         string? searchTerm,
         int? categoryId
     );
 
-    Task<int> GetTotalTasksCountAsync(int userId, string? searchItem, int? categoryId);
+    Task<int> GetTotalTasksCountAsync(string userEmail, string? searchItem, int? categoryId);
     
     Task AddAsync(TaskItem task);
     void Update(TaskItem task);

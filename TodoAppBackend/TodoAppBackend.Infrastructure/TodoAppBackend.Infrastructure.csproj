@@ -7,11 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TodoAppBackend.Domain\TodoAppBackend.Domain.csproj" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Mapping\" />
+      <ProjectReference Include="..\TodoAppBackend.Domain\TodoAppBackend.Domain.csproj" />
     </ItemGroup>
 
 </Project>
