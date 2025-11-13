@@ -15,4 +15,8 @@
       <ProjectReference Include="..\TodoAppBackend.Domain\TodoAppBackend.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>

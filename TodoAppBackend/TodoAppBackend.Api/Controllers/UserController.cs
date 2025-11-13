@@ -10,10 +10,10 @@ namespace TodoAppBackend.Controllers;
 [Route("/api/users")]
 public class UserController(IUserService userService) : ControllerBase
 {
-    [HttpGet("{email}")]
-    public async Task<ActionResult<User>> GetUserByEmail(string email)
+    [HttpGet("{userEmailId}")]
+    public async Task<ActionResult<User>> GetUserByEmail(string userEmailId)
     {
-        var users = await userService.GetUserByEmailAsync(email);
+        var users = await userService.GetUserByEmailAsync(userEmailId);
         return Ok(users);
     }
 

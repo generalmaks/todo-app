@@ -30,17 +30,29 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasMany(u => u.Categories)
             .WithOne()
+            .HasForeignKey(t => t.UserEmailId)
+            .HasPrincipalKey(u => u.Email)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>()
             .HasMany(u => u.Tasks)
             .WithOne()
+            .HasForeignKey(t => t.UserEmailId)
+            .HasPrincipalKey(u => u.Email)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Category>()
-            .HasMany<TaskItem>()
-            .WithOne()
-            .HasForeignKey(t => t.CategoryId)
+            .HasOne(c => c.User)
+            .WithMany(u => u.Categories)
+            .HasForeignKey(c => c.UserEmailId)
+            .HasPrincipalKey(u => u.Email)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasOne(t => t.User)
+            .WithMany(u => u.Tasks)
+            .HasForeignKey(t => t.UserEmailId)
+            .HasPrincipalKey(u => u.Email)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -2,7 +2,7 @@
 
 public record CreateTaskDto
 {
-    public string UserEmail { get; set; }
+    public string UserEmailId { get; set; }
     public string Name { get; set; }
     public string? Description { get; set; }
     public bool IsImportant { get; set; }

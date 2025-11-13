@@ -32,14 +32,14 @@ namespace TodoAppBackend.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    UserEmail = table.Column<string>(type: "text", nullable: true)
+                    UserEmailId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_Users_UserEmail",
-                        column: x => x.UserEmail,
+                        name: "FK_Categories_Users_UserEmailId",
+                        column: x => x.UserEmailId,
                         principalTable: "Users",
                         principalColumn: "Email",
                         onDelete: ReferentialAction.Cascade);
@@ -57,49 +57,38 @@ namespace TodoAppBackend.Infrastructure.Migrations
                     IsImportant = table.Column<bool>(type: "boolean", nullable: false),
                     DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CategoryId = table.Column<int>(type: "integer", nullable: false),
-                    UserEmail = table.Column<string>(type: "text", nullable: true)
+                    UserEmailId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TaskItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaskItems_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskItems_Users_UserEmail",
-                        column: x => x.UserEmail,
+                        name: "FK_TaskItems_Users_UserEmailId",
+                        column: x => x.UserEmailId,
                         principalTable: "Users",
                         principalColumn: "Email",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_UserEmail",
+                name: "IX_Categories_UserEmailId",
                 table: "Categories",
-                column: "UserEmail");
+                column: "UserEmailId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskItems_CategoryId",
+                name: "IX_TaskItems_UserEmailId",
                 table: "TaskItems",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskItems_UserEmail",
-                table: "TaskItems",
-                column: "UserEmail");
+                column: "UserEmailId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TaskItems");
+                name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "TaskItems");
 
             migrationBuilder.DropTable(
                 name: "Users");

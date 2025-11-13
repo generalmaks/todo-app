@@ -37,12 +37,13 @@ namespace TodoAppBackend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserEmail")
+                    b.Property<string>("UserEmailId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserEmail");
+                    b.HasIndex("UserEmailId");
 
                     b.ToTable("Categories");
                 });
@@ -74,14 +75,13 @@ namespace TodoAppBackend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserEmail")
+                    b.Property<string>("UserEmailId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserEmail");
+                    b.HasIndex("UserEmailId");
 
                     b.ToTable("TaskItems");
                 });
@@ -102,24 +102,24 @@ namespace TodoAppBackend.Infrastructure.Migrations
 
             modelBuilder.Entity("TodoAppBackend.Domain.Entities.Category", b =>
                 {
-                    b.HasOne("TodoAppBackend.Domain.Entities.User", null)
+                    b.HasOne("TodoAppBackend.Domain.Entities.User", "User")
                         .WithMany("Categories")
-                        .HasForeignKey("UserEmail")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserEmailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TodoAppBackend.Domain.Entities.TaskItem", b =>
                 {
-                    b.HasOne("TodoAppBackend.Domain.Entities.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
+                    b.HasOne("TodoAppBackend.Domain.Entities.User", "User")
+                        .WithMany("Tasks")
+                        .HasForeignKey("UserEmailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TodoAppBackend.Domain.Entities.User", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("UserEmail")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TodoAppBackend.Domain.Entities.User", b =>

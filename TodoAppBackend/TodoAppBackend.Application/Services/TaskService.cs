@@ -12,7 +12,7 @@ public class TaskService(
 {
     public async Task<int> CreateTaskAsync(CreateTaskDto dto)
     {
-        var user = await userRepository.GetByEmailAsync(dto.UserEmail);
+        var user = await userRepository.GetByEmailAsync(dto.UserEmailId);
         var category = await categoryRepository.GetByIdAsync(dto.CategoryId);
 
         if (user is null)
@@ -26,7 +26,8 @@ public class TaskService(
             Description = dto.Description,
             IsImportant = dto.IsImportant,
             DueDate = dto.DueDate,
-            CategoryId = dto.CategoryId
+            CategoryId = dto.CategoryId,
+            UserEmailId = dto.UserEmailId
         };
         await taskRepository.AddAsync(taskItem);
         await taskRepository.SaveChangesAsync();

@@ -21,7 +21,8 @@ public class CategoryService(
         var category = new Category()
         {
             Name = dto.Name,
-            Description = dto.Description
+            Description = dto.Description,
+            UserEmailId = dto.UserEmailId
         };
         await categoryRepository.CreateAsync(category);
     }
