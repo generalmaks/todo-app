@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoAppBackend.Application.DTOs.User;
+using TodoAppBackend.Application.Interfaces;
 using TodoAppBackend.Application.Services;
 using TodoAppBackend.Domain.Entities;
 
@@ -7,12 +8,12 @@ namespace TodoAppBackend.Controllers;
 
 [ApiController]
 [Route("/api/users")]
-public class UserController(UserService userService) : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
     [HttpGet("{email}")]
     public async Task<ActionResult<User>> GetUserByEmail(string email)
     {
-        var users = await userService.GetUserByEmail(email);
+        var users = await userService.GetUserByEmailAsync(email);
         return Ok(users);
     }
 

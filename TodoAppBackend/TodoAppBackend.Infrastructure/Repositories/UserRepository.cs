@@ -22,4 +22,18 @@ public class UserRepository : IUserRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public void Update(User user)
+    {
+        _context.Update(user);
+    }
+
+    public async Task RemoveAsync(string emailId)
+    {
+        var found = await _context.Users.FindAsync(emailId);
+        if (found is null)
+            throw new KeyNotFoundException("User not found.");
+        _context.Remove(found);
+        await _context.SaveChangesAsync();
+    }
 }

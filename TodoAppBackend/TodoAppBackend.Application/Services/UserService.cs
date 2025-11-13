@@ -1,4 +1,5 @@
 ﻿using TodoAppBackend.Application.DTOs.User;
+using TodoAppBackend.Application.Interfaces;
 using TodoAppBackend.Domain.Entities;
 using TodoAppBackend.Domain.Interfaces.Repositories;
 
@@ -7,7 +8,7 @@ namespace TodoAppBackend.Application.Services;
 public class UserService(
     IUserRepository userRepository,
     IPasswordHasher hasher
-)
+) : IUserService
 {
     public async Task CreateUserAsync(CreateUserDto dto)
     {
@@ -23,8 +24,23 @@ public class UserService(
         await userRepository.SaveChangesAsync();
     }
 
-    public async Task<User?> GetUserByEmail(string email)
+    public async Task<User?> GetUserByEmailAsync(string emailId)
     {
-        return await userRepository.GetByEmailAsync(email);
+        throw new NotImplementedException();
+    }
+
+    public async Task UpdateUserAsync(string emailId, UpdateUserDto dto)
+    {
+        var found = await userRepository.GetByEmailAsync(emailId);
+        if (found is null)
+            throw new KeyNotFoundException("User not found.");
+        var hashedPassword = hasher.Hash(dto.UnhashedPassword);
+        userRepository.Update(found);
+        await userRepository.SaveChangesAsync();
+    }
+
+    public async Task DeleteUserAsync(string emailId)
+    {
+        await userRepository.RemoveAsync(emailId);
     }
 }

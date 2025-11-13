@@ -17,4 +17,23 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
         await context.Categories.AddAsync(category);
         await context.SaveChangesAsync();
     }
+
+    public void Update(Category category)
+    {
+        context.Update(category);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var found = await context.Categories.FindAsync(id);
+        if (found is null)
+            throw new KeyNotFoundException("Category not found.");
+        context.Categories.Remove(found);
+        await context.SaveChangesAsync();
+    }
 }

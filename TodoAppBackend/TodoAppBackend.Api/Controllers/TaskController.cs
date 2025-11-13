@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoAppBackend.Application.DTOs.TaskItem;
+using TodoAppBackend.Application.Interfaces;
 using TodoAppBackend.Application.Services;
 using TodoAppBackend.Domain.Entities;
 
@@ -7,7 +8,7 @@ namespace TodoAppBackend.Controllers;
 
 [ApiController]
 [Route("/api/tasks")]
-public class TaskController(TaskService taskService) : ControllerBase
+public class TaskController(ITaskService taskService) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateTaskDto dto)
