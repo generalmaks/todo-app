@@ -4,6 +4,7 @@ public record UpdateTaskDto
 {
     public string? Name { get; set; }
     public string? Description { get; set; }
+    public bool? IsCompleted { get; set; }
     public bool? IsImportant { get; set; }
     public int? CategoryId { get; set; }
     public DateTime? DueDate { get; set; }

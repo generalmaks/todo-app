@@ -2,6 +2,7 @@
 using TodoAppBackend.Application.Interfaces;
 using TodoAppBackend.Domain.Entities;
 using TodoAppBackend.Domain.Interfaces.Repositories;
+using System.Net.Mail;
 
 namespace TodoAppBackend.Application.Services;
 
@@ -12,10 +13,15 @@ public class UserService(
 {
     public async Task CreateUserAsync(CreateUserDto dto)
     {
-        if (await userRepository.GetByEmailAsync(dto.Email) is not null)
-            throw new Exception("User with this email already exists.");
+        if (!IsValidEmail(dto.Email))
+            throw new ArgumentException("Invalid email provided.");
+        
         if (dto.UnhashedPassword.Length < 8)
             throw new Exception("Password must be at least 8 character long.");
+        
+        if (await userRepository.GetByEmailAsync(dto.Email) is not null)
+            throw new Exception("User with this email already exists.");
+        
         var hashedPassword = hasher.Hash(dto.UnhashedPassword);
         var newUser = new User()
         {
@@ -48,5 +54,18 @@ public class UserService(
     public async Task DeleteUserAsync(string emailId)
     {
         await userRepository.RemoveAsync(emailId);
+    }
+    
+    private static bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

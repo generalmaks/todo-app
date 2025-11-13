@@ -6,8 +6,6 @@ using TodoAppBackend.Domain.Interfaces.Repositories;
 namespace TodoAppBackend.Application.Services;
 
 public class CategoryService(
-    ITaskRepository taskRepository,
-    IUserRepository userRepository,
     ICategoryRepository categoryRepository
 ) : ICategoryService
 {
