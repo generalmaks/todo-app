@@ -55,6 +55,7 @@ public class TaskService(
         if (found is null)
             throw new KeyNotFoundException("Task not found.");
         taskRepository.Delete(found);
+        await taskRepository.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<TaskItem>> GetTasksByUserAsync(string userEmail)

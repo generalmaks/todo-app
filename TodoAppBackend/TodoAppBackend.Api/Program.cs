@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoAppBackend.Application.Interfaces;
 using TodoAppBackend.Application.Services;
 using TodoAppBackend.Domain.Interfaces.Repositories;
 using TodoAppBackend.Infrastructure;
@@ -20,9 +21,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 

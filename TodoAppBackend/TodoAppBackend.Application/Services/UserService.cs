@@ -14,6 +14,8 @@ public class UserService(
     {
         if (await userRepository.GetByEmailAsync(dto.Email) is not null)
             throw new Exception("User with this email already exists.");
+        if (dto.UnhashedPassword.Length < 8)
+            throw new Exception("Password must be at least 8 character long.");
         var hashedPassword = hasher.Hash(dto.UnhashedPassword);
         var newUser = new User()
         {
@@ -26,7 +28,8 @@ public class UserService(
 
     public async Task<User?> GetUserByEmailAsync(string emailId)
     {
-        throw new NotImplementedException();
+        var found = await userRepository.GetByEmailAsync(emailId);
+        return found ?? throw new KeyNotFoundException("User not found.");
     }
 
     public async Task UpdateUserAsync(string emailId, UpdateUserDto dto)
@@ -34,7 +37,10 @@ public class UserService(
         var found = await userRepository.GetByEmailAsync(emailId);
         if (found is null)
             throw new KeyNotFoundException("User not found.");
+        if (dto.UnhashedPassword.Length < 8)
+            throw new Exception("Password must be at least 8 character long.");
         var hashedPassword = hasher.Hash(dto.UnhashedPassword);
+        found.PasswordHash = hashedPassword;
         userRepository.Update(found);
         await userRepository.SaveChangesAsync();
     }

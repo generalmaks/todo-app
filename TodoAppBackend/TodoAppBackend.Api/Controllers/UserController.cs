@@ -26,4 +26,18 @@ public class UserController(IUserService userService) : ControllerBase
         await userService.CreateUserAsync(dto);
         return Created();
     }
+
+    [HttpPut("{userEmailId}")]
+    public async Task<IActionResult> Put(string userEmailId, [FromBody] UpdateUserDto dto)
+    {
+        await userService.UpdateUserAsync(userEmailId, dto);
+        return NoContent();
+    }
+
+    [HttpDelete("{userEmailId}")]
+    public async Task<IActionResult> Delete(string userEmailId)
+    {
+        await userService.DeleteUserAsync(userEmailId);
+        return NoContent();
+    }
 }

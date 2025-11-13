@@ -23,4 +23,20 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
         await categoryService.CreateCategoryAsync(category);
         return Created();
     }
+    
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        await categoryService.UpdateCategoryAsync(id, dto);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteCategory(int id)
+    {
+        await categoryService.DeleteCategoryAsync(id);
+        return NoContent();
+    }
 }
