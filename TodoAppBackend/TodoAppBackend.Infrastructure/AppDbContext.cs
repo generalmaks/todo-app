@@ -28,6 +28,10 @@ public class AppDbContext : DbContext
             .HasKey(t => t.Id);
 
         modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<User>()
             .HasMany(u => u.Categories)
             .WithOne()
             .HasForeignKey(t => t.UserEmailId)
