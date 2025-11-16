@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import {TaskComponent} from '../../components/task/task.component';
-import {TaskService} from '../../services/task.service';
-import {NgForOf} from '@angular/common';
-import {Task} from '../../interfaces/task';
+import { Component, OnInit } from '@angular/core';
+import { TaskComponent } from '../../components/task/task.component';
+import { TaskService } from '../../services/task.service';
+import { NgForOf } from '@angular/common';
+import { TaskItem } from '../../interfaces/task-item';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-tasklist',
@@ -11,16 +12,27 @@ import {Task} from '../../interfaces/task';
     NgForOf
   ],
   templateUrl: './tasklist.component.html',
-  styleUrl: './tasklist.component.css'
+  styleUrls: ['./tasklist.component.css']
 })
-export class TasklistComponent {
-  tasks: Task[] = []
+export class TasklistComponent implements OnInit {
+  tasks: TaskItem[] = []
 
-  constructor(public taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private authService: AuthService) {}
 
   ngOnInit() {
-    this.taskService.getAllTasks().subscribe(tasksInfo => {
-      this.tasks = tasksInfo
-    })
+    const userEmail = this.authService.getEmail();
+    if(!userEmail){
+      console.error('Not logged in')
+      return;
+    }
+
+    this.taskService.getTasksByUser(userEmail).subscribe({
+      next: tasksInfo => {
+        this.tasks = tasksInfo;
+      },
+      error: err => console.error('Error fetching tasks: ', err)
+    });
   }
 }

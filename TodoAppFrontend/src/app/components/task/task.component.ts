@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {TaskService} from '../../services/task.service';
-import {Task} from '../../interfaces/task';
+import {TaskItem} from '../../interfaces/task-item';
 import {DatePipe} from '@angular/common';
 
 @Component({
@@ -12,5 +12,5 @@ import {DatePipe} from '@angular/common';
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
-  @Input() task!: Task;
+  @Input() task!: TaskItem;
 }

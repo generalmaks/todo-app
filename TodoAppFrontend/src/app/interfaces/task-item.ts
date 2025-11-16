@@ -1,7 +1,7 @@
-export interface Task {
+export interface TaskItem {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   isCompleted: boolean;
   isImportant: boolean;
   dueDate: Date;
