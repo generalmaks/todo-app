@@ -2,5 +2,6 @@
 
 public record UpdateUserDto()
 {
-    public string UnhashedPassword { get; set; }
+    public string OldUnhashedPassword { get; set; }
+    public string NewUnhashedPassword { get; set; }
 }

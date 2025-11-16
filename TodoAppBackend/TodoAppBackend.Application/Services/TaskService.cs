@@ -10,6 +10,11 @@ public class TaskService(
     IUserRepository userRepository,
     ICategoryRepository categoryRepository) : ITaskService
 {
+    public async Task<TaskItem> GetTaskByIdAsync(int taskId)
+    {
+        return await taskRepository.GetByIdAsync(taskId) ?? throw new KeyNotFoundException("Task not found.");
+    }
+
     public async Task<int> CreateTaskAsync(CreateTaskDto dto)
     {
         var user = await userRepository.GetByEmailAsync(dto.UserEmailId);

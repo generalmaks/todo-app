@@ -42,10 +42,17 @@ public class UserService(
     {
         var found = await userRepository.GetByEmailAsync(emailId);
         if (found is null)
-            throw new KeyNotFoundException("User not found.");
-        if (dto.UnhashedPassword.Length < 8)
+            throw new Exception("Invalid credentials.");
+
+        var oldHashedPassword = hasher.Hash(dto.OldUnhashedPassword);
+
+        if (oldHashedPassword != found.PasswordHash)
+            throw new Exception("Invalid credentials");
+        
+        if (dto.NewUnhashedPassword.Length < 8)
             throw new Exception("Password must be at least 8 character long.");
-        var hashedPassword = hasher.Hash(dto.UnhashedPassword);
+        
+        var hashedPassword = hasher.Hash(dto.NewUnhashedPassword);
         found.PasswordHash = hashedPassword;
         userRepository.Update(found);
         await userRepository.SaveChangesAsync();
