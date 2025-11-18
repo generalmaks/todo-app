@@ -1,18 +1,23 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, EventEmitter, Output} from '@angular/core';
 import {TaskService} from '../../services/task.service';
 import {TaskItem} from '../../interfaces/task-item';
-import {DatePipe} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-task',
   imports: [
-    DatePipe
+    DatePipe,
+    FormsModule,
+    CommonModule,
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
   @Input() task!: TaskItem;
+
+  @Output() taskDeleted = new EventEmitter<number>();
 
   constructor(private taskService: TaskService) {}
 
@@ -35,5 +40,27 @@ export class TaskComponent {
         console.error(error);
       }
     })
+  }
+
+  deleteTask() {
+    this.taskService.deleteTask(this.task).subscribe({
+      next: response => {
+        console.log("Successfully deleted task: " + response);
+        this.taskDeleted.emit(this.task.id)
+      },
+      error: error => {
+        console.error(error);
+      }
+    })
+  }
+
+  updateName() {
+    if (this.task.name.trim()) {
+      this.updateTask();
+    }
+  }
+
+  updateCategory() {
+
   }
 }

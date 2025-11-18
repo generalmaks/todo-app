@@ -24,7 +24,13 @@ export class TaskService {
   }
 
   postNewTask(task: TaskItem) {
-    return this.http.post<TaskItem>(`${this.apiUrl}`, task);
+    let token: string | null = this.authService.getToken();
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    })
+
+    return this.http.post<TaskItem>(`${this.apiUrl}`, task, { headers });
   }
 
   updateTask(task: TaskItem) {
@@ -38,6 +44,12 @@ export class TaskService {
   }
 
   deleteTask(task: TaskItem) {
-    return this.http.delete(`${this.apiUrl}/${task.id}`);
+    let token: string | null = this.authService.getToken();
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    })
+
+    return this.http.delete(`${this.apiUrl}/${task.id}`, {headers});
   }
 }

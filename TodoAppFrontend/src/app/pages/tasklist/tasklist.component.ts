@@ -35,4 +35,8 @@ export class TasklistComponent implements OnInit {
       error: err => console.error('Error fetching tasks: ', err)
     });
   }
+
+  removeTaskFromList(taskId: number) {
+    this.tasks = this.tasks.filter(t => t.id !== taskId);
+  }
 }

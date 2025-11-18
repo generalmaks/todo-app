@@ -1,5 +1,7 @@
 <ul>
   <li *ngFor="let task of tasks">
-    <app-task [task]="task"></app-task>
+    <app-task
+      [task]="task"
+      (taskDeleted)="removeTaskFromList($event)"></app-task>
   </li>
 </ul>

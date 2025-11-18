@@ -1,31 +1,48 @@
-<div class="flex flex-col w-full p-2">
-  <div class="flex justify-between items-center">
-    <div class="flex items-center gap-2">
+<div class="flex flex-col w-full p-2 border-b hover:bg-gray-50">
+
+  <div class="flex justify-between items-center gap-2">
+
+    <div class="flex items-center gap-2 flex-grow">
       <input
         type="checkbox"
-        name="completed"
-        id="task"
         [checked]="task.isCompleted"
-        (change)="toggleCompleted()">
-      <p class="text-gray-800">{{ task.name }}</p>
+        (change)="toggleCompleted()"
+        class="cursor-pointer">
+
+      <input
+        type="text"
+        [(ngModel)]="task.name"
+        (blur)="updateName()"
+        class="w-full bg-transparent focus:outline-none focus:border-b border-blue-500 text-gray-800">
     </div>
 
-    <div class="flex items-center gap-1">
-      <input
-        type="checkbox"
-        name="important"
-        id="important"
-        [checked]="task.isImportant"
-        (change)="toggleImportant()">
-      <label
-        for="important"
-        class="text-sm
-        text-gray-600">Important</label>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1">
+        <input
+          type="checkbox"
+          [checked]="task.isImportant"
+          (change)="toggleImportant()"
+          class="cursor-pointer">
+        <span class="text-xs text-gray-500">Imp</span> </div>
+
+      <button
+        (click)="deleteTask()"
+        class="text-red-500 font-bold hover:bg-red-100 px-2 rounded transition">
+        ✕
+      </button>
     </div>
   </div>
 
   <div class="flex items-center gap-4 mt-1 text-xs text-gray-500">
-    <span>{{ task.dueDate | date }}</span>
-    <span>{{ task.category }}</span>
+    <span>{{ task.dueDate | date:'shortDate' }}</span>
+
+    <select
+      [(ngModel)]="task.category"
+      (change)="updateCategory()"
+      class="bg-transparent border-none focus:ring-0 cursor-pointer p-0">
+      <option [value]="0">Без категории</option>
+      <option [value]="1">Работа</option>
+      <option [value]="2">Дом</option>
+    </select>
   </div>
 </div>
