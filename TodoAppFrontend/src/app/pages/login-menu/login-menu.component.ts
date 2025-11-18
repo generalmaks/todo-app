@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from '@angular/common';
 import {AuthService} from '../../services/auth.service';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-login-menu',
@@ -23,20 +23,21 @@ export class LoginMenuComponent {
     "password": new FormControl('', [Validators.required, Validators.minLength(8)]),
   })
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private router: Router,) {
   }
 
-  onSubmit(){
+  onSubmit() {
     this.submitted = true;
-    if(this.form.valid){
+    if (this.form.valid) {
       this.authService.login(this.form.value.email, this.form.value.password).subscribe({
         next: res => {
           console.log('Success: ', res);
-          alert(res);
+          this.router.navigate(['/tasklist']);
         },
         error: err => {
           console.error('Error status: ', err);
-          alert(err);
         }
       })
     }

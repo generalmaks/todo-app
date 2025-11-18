@@ -32,11 +32,9 @@ export class RegisterMenuComponent {
       this.authService.register(this.form.value.email, this.form.value.password).subscribe({
         next: res => {
           console.log('Success: ', res);
-          alert(res);
         },
         error: err => {
           console.error('Error status: ', err);
-          alert(err);
         }
       })
     }

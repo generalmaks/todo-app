@@ -4,6 +4,7 @@ import { TaskService } from '../../services/task.service';
 import { NgForOf } from '@angular/common';
 import { TaskItem } from '../../interfaces/task-item';
 import {AuthService} from '../../services/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-tasklist',
@@ -19,12 +20,14 @@ export class TasklistComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private authService: AuthService) {}
+    private authService: AuthService,
+    private router: Router) {}
 
   ngOnInit() {
     const userEmail = this.authService.getEmail();
     if(!userEmail){
       console.error('Not logged in')
+      this.router.navigate(['login']);
       return;
     }
 
