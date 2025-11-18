@@ -49,6 +49,7 @@ public class TaskService(
         found.Name = dto.Name ?? found.Name;
         found.Description = dto.Description ?? found.Description;
         found.IsImportant = dto.IsImportant ?? found.IsImportant;
+        found.IsCompleted = dto.IsCompleted ?? found.IsCompleted;
         found.CategoryId = dto.CategoryId ?? found.CategoryId;
         
         taskRepository.Update(found);

@@ -1,13 +1,26 @@
 <div class="flex flex-col w-full p-2">
   <div class="flex justify-between items-center">
     <div class="flex items-center gap-2">
-      <input type="checkbox" name="task" id="task" [checked]="task.isCompleted">
+      <input
+        type="checkbox"
+        name="completed"
+        id="task"
+        [checked]="task.isCompleted"
+        (change)="toggleCompleted()">
       <p class="text-gray-800">{{ task.name }}</p>
     </div>
 
     <div class="flex items-center gap-1">
-      <input type="checkbox" name="important" id="important" [checked]="task.isImportant">
-      <label for="important" class="text-sm text-gray-600">Important</label>
+      <input
+        type="checkbox"
+        name="important"
+        id="important"
+        [checked]="task.isImportant"
+        (change)="toggleImportant()">
+      <label
+        for="important"
+        class="text-sm
+        text-gray-600">Important</label>
     </div>
   </div>
 
