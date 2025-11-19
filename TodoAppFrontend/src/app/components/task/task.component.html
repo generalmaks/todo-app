@@ -38,6 +38,6 @@
     <div class="flex items-center gap-4 mt-1 text-xs text-gray-500 mr-3">
       <p>{{ categoryName }}</p>
     </div>
-    <time class="flex items-center gap-4 mt-1 text-xs text-gray-500">{{ task.dueDate }}</time>
+    <time class="flex items-center gap-4 mt-1 text-xs text-gray-500">{{ task.dueDate | date }}</time>
   </div>
 </div>
