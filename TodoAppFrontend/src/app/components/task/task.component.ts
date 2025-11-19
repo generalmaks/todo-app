@@ -1,8 +1,11 @@
-import {Component, Input, EventEmitter, Output} from '@angular/core';
+import {Component, Input, EventEmitter, Output, OnInit} from '@angular/core';
 import {TaskService} from '../../services/task.service';
 import {TaskItem} from '../../interfaces/task-item';
 import {CommonModule, DatePipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {CategoryService} from '../../services/category.service';
+import {Category} from '../../interfaces/category';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-task',
@@ -14,12 +17,25 @@ import {FormsModule} from '@angular/forms';
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
-export class TaskComponent {
+export class TaskComponent implements OnInit {
   @Input() task!: TaskItem;
-
   @Output() taskDeleted = new EventEmitter<number>();
 
-  constructor(private taskService: TaskService) {
+  categoryName: string = ''
+
+  constructor(private taskService: TaskService,
+              private categoryService: CategoryService) {
+  }
+
+  ngOnInit() {
+    this.categoryService.getCategoryById(this.task.categoryId).subscribe({
+      next: category => {
+        this.categoryName = category.name;
+      },
+      error: err => {
+        console.error(err);
+      }
+    })
   }
 
   toggleCompleted() {

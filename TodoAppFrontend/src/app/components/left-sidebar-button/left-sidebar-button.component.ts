@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-left-sidebar-button',

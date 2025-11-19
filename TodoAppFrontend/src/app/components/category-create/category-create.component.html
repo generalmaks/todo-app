@@ -1,0 +1,33 @@
+<div class="p-4 bg-white h-full shadow-xl flex flex-col gap-4">
+  <h2 class="text-xl font-bold mb-4">New Category</h2>
+
+  <!-- Name Input -->
+  <div class="flex flex-col gap-1">
+    <label class="text-xs text-gray-500">Name</label>
+    <input
+      type="text"
+      [(ngModel)]="newCategoryName"
+      (keyup.enter)="createCategory()"
+      class="border p-2 rounded focus:outline-blue-500"
+      placeholder="e.g. Buy milk">
+  </div>
+
+  <!-- Description Input -->
+  <div class="flex flex-col gap-1">
+    <label class="text-xs text-gray-500">Description</label>
+    <input
+      type="text"
+      [(ngModel)]="newCategoryDescription"
+      (keyup.enter)="createCategory()"
+      class="border p-2 rounded focus:outline-blue-500"
+      placeholder="e.g. Buy milk">
+  </div>
+
+  <!-- Action Button -->
+  <button
+    (click)="createCategory()"
+    [disabled]="!newCategoryName"
+    class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 transition">
+    Add Category
+  </button>
+</div>

@@ -4,7 +4,6 @@ import {environment} from '../../environment';
 import {TaskItem} from '../interfaces/task-item';
 import {AuthService} from './auth.service';
 import {tap} from 'rxjs';
-import {CategoryService} from './category.service';
 
 @Injectable({
   providedIn: 'root'

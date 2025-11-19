@@ -14,6 +14,8 @@
         [(ngModel)]="task.name"
         (blur)="updateName()"
         class="w-full bg-transparent focus:outline-none focus:border-b border-blue-500 text-gray-800">
+
+      <p class="flex items-center gap-4 mt-1 text-xs text-gray-500">{{ task.description }}</p>
     </div>
 
     <div class="flex items-center gap-3">
@@ -23,26 +25,19 @@
           [checked]="task.isImportant"
           (change)="toggleImportant()"
           class="cursor-pointer">
-        <span class="text-xs text-gray-500">Imp</span> </div>
+        <span class="text-xs text-gray-500">Important</span></div>
 
       <button
         (click)="deleteTask()"
         class="text-red-500 font-bold hover:bg-red-100 px-2 rounded transition">
-        ✕
       </button>
     </div>
   </div>
-
-  <div class="flex items-center gap-4 mt-1 text-xs text-gray-500">
-    <span>{{ task.dueDate | date:'shortDate' }}</span>
-
-    <select
-      [(ngModel)]="task.category"
-      (change)="updateCategory()"
-      class="bg-transparent border-none focus:ring-0 cursor-pointer p-0">
-      <option [value]="0">Без категории</option>
-      <option [value]="1">Работа</option>
-      <option [value]="2">Дом</option>
-    </select>
+  <!-- Category display -->
+  <div class="flex flex-row">
+    <div class="flex items-center gap-4 mt-1 text-xs text-gray-500 mr-3">
+      <p>{{ categoryName }}</p>
+    </div>
+    <time class="flex items-center gap-4 mt-1 text-xs text-gray-500">{{ task.dueDate }}</time>
   </div>
 </div>
