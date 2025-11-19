@@ -6,6 +6,7 @@ namespace TodoAppBackend.Application.Interfaces;
 public interface ICategoryService
 {
     Task<Category?> GetCategoryByIdAsync(int id);
+    Task<IEnumerable<Category>> GetCategoryByUserEmailIdAsync(string userEmailId);
     Task CreateCategoryAsync(CreateCategoryDto dto);
     Task UpdateCategoryAsync(int categoryId, UpdateCategoryDto dto);
     Task DeleteCategoryAsync(int categoryId);

@@ -12,6 +12,11 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<IEnumerable<Category>> GetByUserEmailIdAsync(string userEmailId)
+    {
+        return await context.Categories.Where(c => c.UserEmailId == userEmailId).ToListAsync();
+    }
+
     public async Task CreateAsync(Category category)
     {
         await context.Categories.AddAsync(category);

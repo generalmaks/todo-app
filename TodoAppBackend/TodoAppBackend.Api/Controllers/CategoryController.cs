@@ -31,7 +31,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult> CreateCategory([FromBody] CreateCategoryDto category)
+    public async Task<ActionResult> CreateCategoryById([FromBody] CreateCategoryDto category)
     {
         var senderEmail = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
@@ -43,6 +43,22 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
         
         await categoryService.CreateCategoryAsync(category);
         return Created();
+    }
+
+    [Authorize]
+    [HttpGet("{userEmailId}")]
+    public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesByUserEmailId(string userEmailId)
+    {
+        var senderEmail = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(senderEmail))
+            return Unauthorized();
+
+        if (senderEmail != userEmailId)
+            return Forbid();
+
+        var categories = await categoryService.GetCategoryByUserEmailIdAsync(userEmailId);
+        return Ok(categories);
     }
     
     [Authorize]

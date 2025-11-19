@@ -5,5 +5,5 @@ export interface TaskItem {
   isCompleted: boolean;
   isImportant: boolean;
   dueDate: Date;
-  category: string;
+  category: number;
 }

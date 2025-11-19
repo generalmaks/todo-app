@@ -1,8 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environment';
 import {TaskItem} from '../interfaces/task-item';
 import {AuthService} from './auth.service';
+import {tap} from 'rxjs';
+import {CategoryService} from './category.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,46 +12,57 @@ import {AuthService} from './auth.service';
 export class TaskService {
   apiUrl = environment.apiUrl + '/tasks';
 
-  constructor(private http: HttpClient, private authService: AuthService) {
+  private taskSignal = signal<TaskItem[]>([]);
+
+  readonly tasks = this.taskSignal.asReadonly();
+
+  constructor(private http: HttpClient,
+              private authService: AuthService) {
   }
 
   getTasksByUser(userEmailId: string) {
-    let token: string | null = this.authService.getToken();
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.authService.getToken()}`
-    })
-
-    return this.http.get<TaskItem[]>(`${this.apiUrl}/${userEmailId}`, {headers});
+    return this.http.get<TaskItem[]>(`${this.apiUrl}/${userEmailId}`, {headers: this.getHeaders()})
+      .pipe(
+        tap(tasks => {
+          this.taskSignal.set(tasks)
+        })
+      );
   }
 
   postNewTask(task: TaskItem) {
-    let token: string | null = this.authService.getToken();
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.authService.getToken()}`
-    })
-
-    return this.http.post<TaskItem>(`${this.apiUrl}`, task, { headers });
+    return this.http.post<TaskItem>(`${this.apiUrl}`, task, {headers: this.getHeaders()})
+      .pipe(
+        tap(newTask => {
+          this.taskSignal.update(currentTasks => [...currentTasks, newTask]);
+        }),
+      );
   }
 
   updateTask(task: TaskItem) {
-    let token: string | null = this.authService.getToken();
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.authService.getToken()}`
-    })
-
-    return this.http.put(`${this.apiUrl}/${task.id}`, task, {headers});
+    return this.http.put<TaskItem>(`${this.apiUrl}/${task.id}`, task, {headers: this.getHeaders()})
+      .pipe(
+        tap((updatedTask: TaskItem) => {
+          this.taskSignal.update((tasks: TaskItem[]) =>
+            tasks.map((t: TaskItem) => t.id === updatedTask.id ? updatedTask : t)
+          );
+        })
+      );
   }
 
   deleteTask(task: TaskItem) {
-    let token: string | null = this.authService.getToken();
+    return this.http.delete(`${this.apiUrl}/${task.id}`, {headers: this.getHeaders()})
+      .pipe(
+        // 4. Remove it from the signal instantly
+        tap(() => {
+          this.taskSignal.update(tasks => tasks.filter(t => t.id !== task.id));
+        })
+      );
+  }
 
+  private getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getToken()}`
     })
-
-    return this.http.delete(`${this.apiUrl}/${task.id}`, {headers});
+    return headers;
   }
 }

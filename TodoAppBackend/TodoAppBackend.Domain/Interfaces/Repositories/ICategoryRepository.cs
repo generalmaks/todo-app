@@ -5,6 +5,7 @@ namespace TodoAppBackend.Domain.Interfaces.Repositories;
 public interface ICategoryRepository
 {
     Task<Category?> GetByIdAsync(int id);
+    Task<IEnumerable<Category>> GetByUserEmailIdAsync(string userEmailId);
     Task CreateAsync(Category dto);
     void Update(Category category);
     Task SaveChangesAsync();

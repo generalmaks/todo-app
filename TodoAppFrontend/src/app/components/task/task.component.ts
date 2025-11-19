@@ -19,7 +19,8 @@ export class TaskComponent {
 
   @Output() taskDeleted = new EventEmitter<number>();
 
-  constructor(private taskService: TaskService) {}
+  constructor(private taskService: TaskService) {
+  }
 
   toggleCompleted() {
     this.task.isCompleted = !this.task.isCompleted;

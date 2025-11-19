@@ -1,1 +1,32 @@
-<p>right-sidebar works!</p>
+<div class="p-4 bg-white h-full shadow-xl flex flex-col gap-4">
+  <h2 class="text-xl font-bold mb-4">New Task</h2>
+
+  <!-- Task Name Input -->
+  <div class="flex flex-col gap-1">
+    <label class="text-xs text-gray-500">What needs doing?</label>
+    <input
+      type="text"
+      [(ngModel)]="newTaskName"
+      (keyup.enter)="createTask()"
+      class="border p-2 rounded focus:outline-blue-500"
+      placeholder="e.g. Buy milk">
+  </div>
+
+  <!-- Simple Category Select -->
+  <div class="flex flex-col gap-1">
+    <label class="text-xs text-gray-500">Category</label>
+    <select [(ngModel)]="newTaskCategory" class="border p-2 rounded">
+      @for (category of categories; track category.id) {
+        <option [value]="category.id">{{ category.name }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Action Button -->
+  <button
+    (click)="createTask()"
+    [disabled]="!newTaskName"
+    class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 transition">
+    Add Task
+  </button>
+</div>

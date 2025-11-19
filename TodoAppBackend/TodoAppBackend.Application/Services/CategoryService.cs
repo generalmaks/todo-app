@@ -14,6 +14,11 @@ public class CategoryService(
         return await categoryRepository.GetByIdAsync(id);
     }
 
+    public async Task<IEnumerable<Category>> GetCategoryByUserEmailIdAsync(string userEmailId)
+    {
+        return await categoryRepository.GetByUserEmailIdAsync(userEmailId);
+    }
+
     public async Task CreateCategoryAsync(CreateCategoryDto dto)
     {
         var category = new Category()
