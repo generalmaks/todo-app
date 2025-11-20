@@ -31,7 +31,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult> CreateCategoryById([FromBody] CreateCategoryDto category)
+    public async Task<ActionResult> CreateCategoryAsync([FromBody] CreateCategoryDto category)
     {
         var senderEmail = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 

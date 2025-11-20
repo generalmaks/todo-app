@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -12,6 +14,8 @@ namespace TodoAppBackend.Tests.Controllers
     [TestFixture]
     public class CategoryControllerTests
     {
+        private const string TestEmail = "maksym@gmail.com";
+
         private Mock<ICategoryService> _mockService = null!;
         private CategoryController _controller = null!;
 
@@ -20,104 +24,146 @@ namespace TodoAppBackend.Tests.Controllers
         {
             _mockService = new Mock<ICategoryService>();
             _controller = new CategoryController(_mockService.Object);
+
+            var context = new DefaultHttpContext();
+            context.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, TestEmail) })
+            );
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = context
+            };
         }
 
         [Test]
-        public async Task GetCategory_ReturnsOk_WhenCategoryExists()
+        public async Task GetCategory_ReturnsOk_WhenCategoryExists_AndOwnedByUser()
         {
-            // Arrange
-            var categoryDto = new Category()
+            var category = new Category
             {
                 Id = 1,
-                Name = "TestName",
-                Description = "Description",
-                UserEmailId = "maksym@gmail.com",
+                Name = "Test",
+                Description = "Desc",
+                UserEmailId = TestEmail
             };
-            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
-                        .ReturnsAsync(categoryDto);
 
-            // Act
+            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
+                .ReturnsAsync(category);
+
             var result = await _controller.GetCategory(1);
 
-            // Assert
-            var okResult = result as OkObjectResult;
-            Assert.Multiple(() =>
-            {
-                Assert.That(okResult, Is.Not.Null);
-                Assert.That(categoryDto, Is.EqualTo(okResult!.Value));
-            });
+            var ok = result as OkObjectResult;
+            Assert.That(ok, Is.Not.Null);
+            Assert.That(ok!.Value, Is.EqualTo(category));
         }
 
         [Test]
-        public async Task GetCategory_ReturnsOk_WithNull_WhenCategoryDoesNotExist()
+        public async Task GetCategory_ReturnsForbid_WhenCategoryExists_ButNotOwned()
         {
-            // Arrange
+            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
+                .ReturnsAsync(new Category { UserEmailId = "someone_else@gmail.com" });
+
+            var result = await _controller.GetCategory(1);
+
+            Assert.That(result, Is.InstanceOf<ForbidResult>());
+        }
+
+        [Test]
+        public async Task GetCategory_ReturnsForbid_WhenCategoryDoesNotExist()
+        {
             _mockService.Setup(s => s.GetCategoryByIdAsync(It.IsAny<int>()))
-                        .ReturnsAsync((Category?)null);
+                .ReturnsAsync((Category?)null);
 
-            // Act
-            var result = await _controller.GetCategory(999);
+            var result = await _controller.GetCategory(123);
 
-            // Assert
-            var okResult = result as OkObjectResult;
-            Assert.Multiple(() =>
-            {
-                Assert.That(okResult, Is.Not.Null);
-                Assert.That(okResult!.Value, Is.Null);
-            });
+            Assert.That(result, Is.InstanceOf<ForbidResult>());
         }
 
         [Test]
-        public async Task CreateCategory_ReturnsCreated()
+        public async Task CreateCategory_ReturnsCreated_WhenEmailMatchesUser()
         {
-            // Arrange
-            var createDto = new CreateCategoryDto()
+            var dto = new CreateCategoryDto
             {
-                Name = "Name",
-                Description = "Description",
-                UserEmailId = "Email@gmail.com"
+                Name = "Cat",
+                Description = "Desc",
+                UserEmailId = TestEmail
             };
-            _mockService.Setup(s => s.CreateCategoryAsync(createDto))
-                        .Returns(Task.CompletedTask);
 
-            // Act
-            var result = await _controller.CreateCategory(createDto);
+            _mockService.Setup(s => s.CreateCategoryAsync(dto))
+                .Returns(Task.CompletedTask);
 
-            // Assert
+            var result = await _controller.CreateCategoryAsync(dto);
+
             Assert.That(result, Is.InstanceOf<CreatedResult>());
         }
 
         [Test]
-        public async Task UpdateCategory_ReturnsNoContent_WhenModelIsValid()
+        public async Task CreateCategory_ReturnsForbid_WhenUserEmailDoesNotMatch()
         {
-            // Arrange
-            var updateDto = new UpdateCategoryDto
+            var dto = new CreateCategoryDto
             {
-                Name = "Name",
-                Description = "Description"
+                Name = "Cat",
+                Description = "Desc",
+                UserEmailId = "someone_else@gmail.com"
             };
-            _mockService.Setup(s => s.UpdateCategoryAsync(1, updateDto))
-                        .Returns(Task.CompletedTask);
 
-            // Act
-            var result = await _controller.UpdateCategory(1, updateDto);
+            var result = await _controller.CreateCategoryAsync(dto);
 
-            // Assert
+            Assert.That(result, Is.InstanceOf<ForbidResult>());
+        }
+
+        [Test]
+        public async Task UpdateCategory_ReturnsNoContent_WhenOwnedByUser()
+        {
+            var dto = new UpdateCategoryDto { Name = "New", Description = "Desc" };
+
+            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
+                .ReturnsAsync(new Category { UserEmailId = TestEmail });
+
+            _mockService.Setup(s => s.UpdateCategoryAsync(1, dto))
+                .Returns(Task.CompletedTask);
+
+            var result = await _controller.UpdateCategory(1, dto);
+
             Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
-        public async Task DeleteCategory_ReturnsNoContent()
+        public async Task UpdateCategory_ReturnsForbid_WhenNotOwnedByUser()
         {
-            // Arrange
-            _mockService.Setup(s => s.DeleteCategoryAsync(1))
-                        .Returns(Task.CompletedTask);
+            var dto = new UpdateCategoryDto { Name = "New", Description = "Desc" };
 
-            // Act
+            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
+                .ReturnsAsync(new Category { UserEmailId = "someone_else@gmail.com" });
+
+            var result = await _controller.UpdateCategory(1, dto);
+
+            Assert.That(result, Is.InstanceOf<ForbidResult>());
+        }
+
+        [Test]
+        public async Task DeleteCategory_ReturnsNoContent_WhenOwnedByUser()
+        {
+            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
+                .ReturnsAsync(new Category { UserEmailId = TestEmail });
+
+            _mockService.Setup(s => s.DeleteCategoryAsync(1))
+                .Returns(Task.CompletedTask);
+
             var result = await _controller.DeleteCategory(1);
 
-            // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());
+        }
+
+        [Test]
+        public async Task DeleteCategory_ReturnsForbid_WhenNotOwned()
+        {
+            _mockService.Setup(s => s.GetCategoryByIdAsync(1))
+                .ReturnsAsync(new Category { UserEmailId = "someone_else@gmail.com" });
+
+            var result = await _controller.DeleteCategory(1);
+
+            Assert.That(result, Is.InstanceOf<ForbidResult>());
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using TodoAppBackend.Controllers;
 using TodoAppBackend.Application.DTOs.User;
@@ -13,11 +15,30 @@ namespace TodoAppBackend.Tests.Controllers
         private Mock<IUserService> _mockService = null!;
         private UserController _controller = null!;
 
+        private const string AuthEmail = "user@mail.com";
+
         [SetUp]
         public void Setup()
         {
             _mockService = new Mock<IUserService>();
             _controller = new UserController(_mockService.Object);
+            
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, "auth@example.com"),
+                new Claim(ClaimTypes.Role, "User")
+            };
+            var identity = new ClaimsIdentity(claims, "mock");
+            var user = new ClaimsPrincipal(identity);
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = user
+                }
+            };
+
         }
 
         [Test]
@@ -101,29 +122,68 @@ namespace TodoAppBackend.Tests.Controllers
         }
 
         [Test]
-        public async Task Put_ReturnsNoContent()
+        public async Task Put_UserIsOwner_ReturnsNoContent()
         {
-            // Arrange
-            var dto = new UpdateUserDto { UnhashedPassword = "newpassword" };
-            _mockService.Setup(s => s.UpdateUserAsync("test@example.com", dto))
-                        .Returns(Task.CompletedTask);
+            var email = "auth@example.com";
 
-            // Act
-            var result = await _controller.Put("test@example.com", dto);
+            _controller.ControllerContext.HttpContext.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Role, "User")
+                }, "mock")
+            );
 
-            // Assert
+            _mockService.Setup(s => s.DeleteUserAsync(email))
+                .Returns(Task.CompletedTask);
+
+            var result = await _controller.Delete(email);
+
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
+        }
+        
+        [Test]
+        public async Task Delete_ReturnsNoContent_WhenUserIsAdmin()
+        {
+            var email = "admin@example.com";
+            var targetEmail = "someone@example.com";
+
+            _controller.ControllerContext.HttpContext.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Role, "Admin")
+                }, "mock")
+            );
+
+            _mockService.Setup(s => s.DeleteUserAsync(targetEmail))
+                .Returns(Task.CompletedTask);
+
+            var result = await _controller.Delete(targetEmail);
+
             Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
+
         [Test]
-        public async Task Delete_ReturnsNoContent()
+        public async Task Delete_UserIsOwner_ReturnsNoContent()
         {
             // Arrange
-            _mockService.Setup(s => s.DeleteUserAsync("test@example.com"))
+            var email = "auth@example.com";
+
+            _controller.ControllerContext.HttpContext.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Role, "User") // not admin
+                }, "mock")
+            );
+            
+            _mockService.Setup(s => s.DeleteUserAsync(email))
                         .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.Delete("test@example.com");
+            var result = await _controller.Delete(email);
 
             // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());

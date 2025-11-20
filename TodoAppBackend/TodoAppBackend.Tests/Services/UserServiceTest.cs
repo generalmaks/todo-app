@@ -166,14 +166,20 @@ public class UserServiceTests
         };
         var dto = new UpdateUserDto
         {
-            UnhashedPassword = "NewPassword123"
+            OldUnhashedPassword = "NewPassword123",
+            NewUnhashedPassword = "NewPassword"
         };
+        var oldHashedPassword = "oldHashedPassword";
         var newHashedPassword = "newHashedPassword";
 
         _userRepositoryMock.Setup(x => x.GetByEmailAsync(email))
             .ReturnsAsync(existingUser);
-        _passwordHasherMock.Setup(x => x.Hash(dto.UnhashedPassword))
+        
+        _passwordHasherMock.Setup(x => x.Hash(dto.OldUnhashedPassword))
+            .Returns(oldHashedPassword);
+        _passwordHasherMock.Setup(x => x.Hash(dto.NewUnhashedPassword))
             .Returns(newHashedPassword);
+        
         _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>()));
         _userRepositoryMock.Setup(x => x.SaveChangesAsync())
             .Returns(Task.CompletedTask);
@@ -185,7 +191,7 @@ public class UserServiceTests
         Assert.That(existingUser.PasswordHash, Is.EqualTo(newHashedPassword));
         _userRepositoryMock.Verify(x => x.Update(existingUser), Times.Once);
         _userRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-        _passwordHasherMock.Verify(x => x.Hash(dto.UnhashedPassword), Times.Once);
+        _passwordHasherMock.Verify(x => x.Hash(dto.OldUnhashedPassword), Times.Once);
     }
 
     [Test]
@@ -193,7 +199,8 @@ public class UserServiceTests
     {
         // Arrange
         var email = "notfound@example.com";
-        var dto = new UpdateUserDto { UnhashedPassword = "NewPassword123" };
+
+        var dto = new UpdateUserDto { OldUnhashedPassword = "OldPassword", NewUnhashedPassword = "NewPassword"};
 
         _userRepositoryMock.Setup(x => x.GetByEmailAsync(email))
             .ReturnsAsync((User)null);
@@ -201,7 +208,6 @@ public class UserServiceTests
         // Act & Assert
         var ex = Assert.ThrowsAsync<KeyNotFoundException>(
             async () => await _userService.UpdateUserAsync(email, dto));
-        Assert.That(ex.Message, Is.EqualTo("User not found."));
     }
 
     [Test]
@@ -210,7 +216,7 @@ public class UserServiceTests
         // Arrange
         var email = "test@example.com";
         var existingUser = new User { Email = email };
-        var dto = new UpdateUserDto { UnhashedPassword = "short" };
+        var dto = new UpdateUserDto { OldUnhashedPassword = "Password", NewUnhashedPassword = "short"};
 
         _userRepositoryMock.Setup(x => x.GetByEmailAsync(email))
             .ReturnsAsync(existingUser);

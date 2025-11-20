@@ -42,7 +42,7 @@ public class UserService(
     {
         var found = await userRepository.GetByEmailAsync(emailId);
         if (found is null)
-            throw new Exception("Invalid credentials.");
+            throw new KeyNotFoundException("Invalid credentials.");
 
         var oldHashedPassword = hasher.Hash(dto.OldUnhashedPassword);
 
